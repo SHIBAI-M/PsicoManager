@@ -1,0 +1,38 @@
+/* css/Cadastro.module.css */
+
+.pagina {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.cartao {
+  background-color: #ffffff;
+  padding: 40px;
+  width: 100%;
+  max-width: 450px;
+  border-radius: 12px;
+  box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.08);
+}
+
+.cartao img {
+  display: block; /* Transforma a imagem num bloco, para podermos usar margens nela */
+  margin: 0 auto; /* O 'auto' nas laterais empurra a imagem exatamente para o meio! */
+  max-width: 200px; /* Evita que a logo fique gigante. Ajuste esse valor se precisar! */
+  margin-bottom: 20px; /* Dá um espacinho entre a logo e o título */
+}
+
+.cartao h2 {
+  text-align: center;
+  margin-bottom: 30px;
+  color: #334155;
+}
+
+/* Para aplicar o gap no form, você pode chamar a tag direto dentro do cartao */
+.cartao form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px; 
+}

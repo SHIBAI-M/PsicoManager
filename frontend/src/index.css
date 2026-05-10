@@ -1,0 +1,64 @@
+/* src/index.css */
+
+/* 1. Reset Global - Tira as margens invisíveis do navegador */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* 2. Estilo Base da Página */
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #f8fafc; /* Um cinza beeeem claro e limpo para o fundo */
+  color: #334155; /* Texto escuro e legível, melhor que o preto 100% */
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 3. Padronização de Inputs e Selects */
+input, select {
+  width: 100%;
+  padding: 12px 16px;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px; /* Cantos arredondados modernos */
+  font-size: 16px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+input:focus, select:focus {
+  border-color: #20bbb3; /* Destaque verde esmeralda ao clicar */
+}
+
+/* 4. Padronização de Botões */
+button {
+  background-color: #20bbb3; /* Verde esmeralda primário */
+  color: #ffffff;
+  border: none;
+  border-radius: 8px; /* Acompanhando os inputs */
+  padding: 14px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+button:hover {
+  background-color: #440596; /* Tom mais escuro no hover */
+}
+
+button:disabled {
+  background-color: #94a3b8;
+  cursor: not-allowed;
+}
+
+/* 5. Padronização de Links */
+a {
+  color: #20bbb3;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+a:hover {
+  text-decoration: underline;
+}
