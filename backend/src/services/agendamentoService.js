@@ -7,24 +7,62 @@ async function CriarAgendamento(dados) {
 }
 
 async function ListarAgendamentos(filtro) {
-    let query = supabase.from('agendamentos').select(`
-        *,
-        pacientes ( id, profiles (nome) ),
-        psicologos ( id, profiles (nome) ),
-        salas ( nome )
-    `);
+    try {
+        // 1. Iniciamos a query (Protegida contra erros de relacionamento)
+        let query = supabase.from('agendamentos').select(`
+            *,
+            pacientes ( id, profiles ( nome ) ),
+            psicologos ( id, profiles ( nome ) ),
+            salas ( id, nome )
+        `);
 
-    if (filtro.tipo === 'psicologo') {
-        const { data: psi } = await supabase.from('psicologos').select('id').eq('profile_id', filtro.id).single();
-        if (psi) query = query.eq('psicologo_id', psi.id);
-    } else if (filtro.tipo === 'paciente') {
-        const { data: pac } = await supabase.from('pacientes').select('id').eq('profile_id', filtro.id).single();
-        if (pac) query = query.eq('paciente_id', pac.id);
+        // 2. Filtros seguros (Removido o .single() que causava quebra)
+        if (filtro.tipo === 'psicologo') {
+            // Traz como array, se vier vazio, ele não quebra o servidor
+            const { data: psi, error: erroPsi } = await supabase
+                .from('psicologos')
+                .select('id')
+                .eq('profile_id', filtro.id);
+                
+            if (erroPsi) console.error("Erro ao buscar Psicólogo:", erroPsi);
+
+            if (psi && psi.length > 0) {
+                query = query.eq('psicologo_id', psi[0].id);
+            } else {
+                return []; // Retorna lista vazia se não achar o psicólogo
+            }
+
+        } else if (filtro.tipo === 'paciente') {
+            const { data: pac, error: erroPac } = await supabase
+                .from('pacientes')
+                .select('id')
+                .eq('profile_id', filtro.id);
+                
+            if (erroPac) console.error("Erro ao buscar Paciente:", erroPac);
+
+            if (pac && pac.length > 0) {
+                query = query.eq('paciente_id', pac[0].id);
+            } else {
+                return []; // Retorna lista vazia se não achar o paciente
+            }
+        }
+
+        // 3. Executa a busca final
+        const { data, error } = await query;
+        
+        if (error) {
+            console.error("==== ERRO DO SUPABASE NO AGENDAMENTO ====");
+            console.error(error.message);
+            console.error("=========================================");
+            throw new Error(error.message);
+        }
+        
+        return data;
+        
+    } catch (erroGeral) {
+        console.error("Erro fatal no agendamentoService:", erroGeral.message);
+        throw erroGeral;
     }
-
-    const { data, error } = await query;
-    if (error) throw new Error(error.message);
-    return data;
 }
 
 module.exports = { CriarAgendamento, ListarAgendamentos };

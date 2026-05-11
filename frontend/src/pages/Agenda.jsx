@@ -23,20 +23,27 @@ function Agenda() {
 
     useEffect(() => {
         carregarAgenda();
-        carregarListas();
+        carregarDadosIniciais();
     }, []);
 
-    const carregarListas = async () => {
+    const carregarDadosIniciais = async () => {
         try {
-            const [resPac, resPsi, resSalas] = await Promise.all([
+            const [resPac, resPsi, resSal] = await Promise.all([
                 fetch('http://localhost:5632/lista-pacientes'),
                 fetch('http://localhost:5632/lista-psicologos'),
                 fetch('http://localhost:5632/lista-salas')
             ]);
-            setListaPacientes(await resPac.json());
-            setListaPsicologos(await resPsi.json());
-            setListaSalas(await resSalas.json());
-        } catch (e) { console.error("Erro ao carregar dados", e); }
+            
+            const pacs = await resPac.json();
+            const psis = await resPsi.json();
+            const sals = await resSal.json();
+
+            if (Array.isArray(pacs)) setListaPacientes(pacs);
+            if (Array.isArray(psis)) setListaPsicologos(psis);
+            if (Array.isArray(sals)) setListaSalas(sals);
+        } catch (e) { 
+            console.error("Erro ao carregar listas", e); 
+        }
     };
 
     const carregarAgenda = async () => {
@@ -45,28 +52,39 @@ function Agenda() {
             const res = await fetch(url);
             const dados = await res.json();
             
-            const formatados = dados.map(a => ({
-                id: a.id,
-                title: `Sessão: ${a.pacientes?.profiles?.nome_completo || 'Consulta'}`,
-                start: a.data_inicio,
-                end: a.data_fim,
-                backgroundColor: a.status === 'concluido' ? '#10b981' : (a.status === 'pendente' ? '#f59e0b' : '#334155')
-            }));
-            setEventos(formatados);
-        } catch (e) { console.error("Erro ao carregar agenda", e); }
+            console.log("Dados recebidos do banco:", dados); // Verifique isso no F12 do navegador
+
+            if (Array.isArray(dados)) {
+                const formatados = dados.map(a => ({
+                    id: a.id,
+                    // Caminho: paciente -> profile -> nome
+                    title: `Sessão: ${a.pacientes?.profiles?.nome || 'Paciente'}`,
+                    start: a.data_inicio,
+                    end: a.data_fim,
+                    backgroundColor: a.status === 'concluido' ? '#10b981' : (a.status === 'pendente' ? '#f59e0b' : '#334155'),
+                    textColor: '#ffffff'
+                }));
+                setEventos(formatados);
+            }
+        } catch (e) {
+            console.error("Erro ao carregar agenda", e);
+        }
     };
 
-    const lidarComCliqueNoDia = async (info) => {
+    const lidarComCliqueNoDia = (info) => {
         setDataSelecionada(info.dateStr);
         
-        
         if (usuarioLogado.tipoUsuario === 'paciente') {
-            
-            const res = await fetch(`http://localhost:5632/agendamentos?id=${usuarioLogado.userId}&tipo=paciente`);
-            
-            setPacienteId(listaPacientes.find(p => p.nome === usuarioLogado.nome)?.id || '');
+            const meuId = listaPacientes.find(p => p.nome === usuarioLogado.nome)?.id;
+            setPacienteId(meuId || '');
+            setPsicologoId('');
         } else if (usuarioLogado.tipoUsuario === 'psicologo') {
-            setPsicologoId(listaPsicologos.find(p => p.nome === usuarioLogado.nome)?.id || '');
+            const meuId = listaPsicologos.find(psi => psi.nome === usuarioLogado.nome)?.id;
+            setPsicologoId(meuId || '');
+            setPacienteId('');
+        } else {
+            setPacienteId('');
+            setPsicologoId('');
         }
         
         setExibirModal(true);
@@ -74,7 +92,12 @@ function Agenda() {
 
     const salvarAgendamento = async (e) => {
         e.preventDefault();
-        const dados = {
+        
+        if (!pacienteId || !psicologoId || !salaId) {
+            return alert("Preencha todos os campos corretamente.");
+        }
+
+        const dadosAgendamento = {
             paciente_id: pacienteId,
             psicologo_id: psicologoId,
             sala_id: salaId,
@@ -83,18 +106,23 @@ function Agenda() {
             status: 'pendente'
         };
 
-        const res = await fetch('http://localhost:5632/agendamentos', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(dados)
-        });
+        try {
+            const res = await fetch('http://localhost:5632/agendamentos', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(dadosAgendamento)
+            });
 
-        if (res.ok) {
-            alert("Agendamento realizado!");
-            setExibirModal(false);
-            carregarAgenda();
-        } else {
-            alert("Erro ao salvar agendamento.");
+            if (res.ok) {
+                alert("Agendamento salvo com sucesso!");
+                setExibirModal(false);
+                carregarAgenda();
+            } else {
+                const erro = await res.json();
+                alert(`Erro: ${erro.mensagem}`);
+            }
+        } catch (error) {
+            alert("Erro de conexão.");
         }
     };
 
@@ -113,17 +141,22 @@ function Agenda() {
             {exibirModal && (
                 <div style={{ position: 'fixed', top:0, left:0, width:'100%', height:'100%', backgroundColor:'rgba(0,0,0,0.6)', display:'flex', justifyContent:'center', alignItems:'center', zIndex: 1000 }}>
                     <div className={estilos.cartao} style={{ width: '450px', backgroundColor: 'white', padding: '30px' }}>
-                        <h3>Novo Agendamento</h3>
-                        <form onSubmit={salvarAgendamento} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
-                            <select value={pacienteId} onChange={e => setPacienteId(e.target.value)} required disabled={usuarioLogado.tipoUsuario === 'paciente'}>
-                                <option value="">Selecione o Paciente</option>
-                                {listaPacientes.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
-                            </select>
+                        <h3>Agendar Sessão</h3>
+                        <form onSubmit={salvarAgendamento} style={{ display: 'flex', flexDirection: 'column', gap: '15px', marginTop: '15px' }}>
+                            
+                            {usuarioLogado.tipoUsuario !== 'paciente' ? (
+                                <select value={pacienteId} onChange={e => setPacienteId(e.target.value)} required>
+                                    <option value="">Selecione o Paciente</option>
+                                    {listaPacientes.map(p => <option key={p.id} value={p.id}>{p.nome}</option>)}
+                                </select>
+                            ) : <p>Paciente: <strong>{usuarioLogado.nome}</strong></p>}
 
-                            <select value={psicologoId} onChange={e => setPsicologoId(e.target.value)} required disabled={usuarioLogado.tipoUsuario === 'psicologo'}>
-                                <option value="">Selecione o Psicólogo</option>
-                                {listaPsicologos.map(psi => <option key={psi.id} value={psi.id}>{psi.nome}</option>)}
-                            </select>
+                            {usuarioLogado.tipoUsuario !== 'psicologo' ? (
+                                <select value={psicologoId} onChange={e => setPsicologoId(e.target.value)} required>
+                                    <option value="">Selecione o Psicólogo</option>
+                                    {listaPsicologos.map(psi => <option key={psi.id} value={psi.id}>{psi.nome}</option>)}
+                                </select>
+                            ) : <p>Profissional: <strong>{usuarioLogado.nome}</strong></p>}
 
                             <select value={salaId} onChange={e => setSalaId(e.target.value)} required>
                                 <option value="">Selecione a Sala</option>
