@@ -44,7 +44,7 @@ button {
 }
 
 button:hover {
-  background-color: #440596; /* Tom mais escuro no hover */
+  background-color: #440596; 
 }
 
 button:disabled {
@@ -52,7 +52,7 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* 5. Padronização de Links */
+
 a {
   color: #20bbb3;
   text-decoration: none;

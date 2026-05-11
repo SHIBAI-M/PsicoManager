@@ -1,12 +1,16 @@
 const express = require('express');
+const cors = require('cors'); // O CORS tem que ser importado aqui!
+const rotas = require('./src/routes/routes.js'); // Importa o seu arquivo de rotas
+
 const app = express();
 
-const port = 5632;
+app.use(cors());
+app.use(express.json());
 
-app.get('/', (req, res) => {
-  res.send('Olá! O servidor está rodando perfeitamente.');
-});
+app.use(rotas);
 
-app.listen(port, ()=>{
-    console.log(`Servidor rodando ness porta: http//localhost:${port}`);
+const PORT = 5632;
+
+app.listen(PORT, () => {
+    console.log(`Servidor rodando na porta ${PORT}`);
 });

@@ -1,26 +1,35 @@
-import { useState } from 'react'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import Login from './pages/login.jsx'
-import Home from './pages/home.jsx'
-import Cadastro from './pages/cadastro.jsx'
-import './App.css'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Login from './pages/Login.jsx';
+import Cadastro from './pages/Cadastro.jsx';
+import Layout from './components/Layout.jsx';
+import NovoPaciente from './pages/NovoPaciente.jsx';
+import PainelAdmin from './pages/PainelAdmin.jsx';
+import AreaPsicologo from './pages/AreaPsicologo.jsx'
+import AreaPaciente from './pages/AreaPaciente.jsx'
+import Agenda from './pages/Agenda.jsx';
+import './App.css';
+import { AuthProvider } from './context/AuthContext.jsx';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
     <BrowserRouter>
-      <Routes>
-
-        <Route path="/" element={<Cadastro/>}/>
-        <Route path="/login" element={<Login/>}/>
-        
-      </Routes>
+      <AuthProvider>
+        <Routes>
+    
+          <Route element={<Layout />}>
+          <Route path="/" element={<Cadastro />} />
+          <Route path="/login" element={<Login />} />
+             <Route path="/painel-admin" element={<PainelAdmin />} />
+             <Route path="/novo-paciente" element={<NovoPaciente />} />
+             <Route path="/agendamento" element={<Agenda />} />
+            <Route path="/area-paciente" element={<AreaPaciente />} />
+            <Route path="/painel-psicologo" element={<AreaPsicologo />} />
+             
+          </Route>
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
-  )
+  );
 }
 
-export default App
+export default App;

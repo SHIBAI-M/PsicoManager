@@ -1,39 +1,78 @@
 import { useState } from "react";
 import estilos from '../css/Cadastro.module.css';
 import logo from '../assets/psico.png';
+import { useNavigate } from "react-router-dom";
 
 function Cadastro() {
+  const navegar = useNavigate();
+
   const [nome, setNome] = useState('');
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
   const [telefone, setTelefone] = useState('');
+  
+  const [carregando, setCarregando] = useState(false);
+  const [erro, setErro] = useState(null);
+ 
+  const [tipoUsuario, setTipoUsuario] = useState('paciente');
 
-  // --- A FUNÇÃO QUE FALTAVA ESTÁ AQUI EMBAIXO ---
   const aplicarMascaraTelefone = (valor) => {
     if (!valor) return "";
     
-    // 1. Remove tudo o que não for número
     valor = valor.replace(/\D/g, "");
-    
-    // 2. Aplica a máscara (XX) XXXXX-XXXX
     valor = valor.replace(/^(\d{2})(\d)/g, "($1) $2");
     valor = valor.replace(/(\d{5})(\d)/, "$1-$2");
     
-    // 3. Limita o tamanho máximo
     return valor.substring(0, 15);
   };
 
   const lidarComTelefone = (evento) => {
     const valorDigitado = evento.target.value;
-    // Agora a função existe e vai retornar o valor formatado!
     const valorComMascara = aplicarMascaraTelefone(valorDigitado);
     setTelefone(valorComMascara);
   };
 
-  const realizarCadastro = (evento) => {
+  const realizarCadastro = async (evento) => {
     evento.preventDefault(); 
-    console.log("Dados capturados: ", { nome, email, telefone, senha });
-    alert("Cadastro feito com sucesso!");
+    
+    console.log("Dados capturados: ", { nome, email, telefone, senha, tipoUsuario });
+
+    const telefoneLimpo = telefone.replace(/\D/g, "");
+
+    const dados = {
+      nome,
+      email,
+      telefone: telefoneLimpo,
+      senha,
+      tipoUsuario
+    };
+
+    try {
+       const resposta = await fetch('http://localhost:5632/auth/cadastro', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(dados)
+      });
+
+       if (!resposta.ok) {
+        const erroDoServidor = await resposta.json();
+        throw new Error(erroDoServidor.mensagem || 'Erro ao realizar cadastro.');
+      }
+
+      alert("Cadastro feito com sucesso!");
+
+       setNome(''); setEmail(''); setSenha(''); setTelefone('');
+
+       navegar('/login');
+       
+    } catch (error) {
+      console.log("Erro ao enviar pro banco", error);
+      setErro(error.message);
+    }
+
+    
   };
 
   return (
@@ -66,6 +105,17 @@ function Cadastro() {
             onChange={lidarComTelefone} 
             required 
           />
+
+         
+          <select 
+            value={tipoUsuario} 
+            onChange={(evento) => setTipoUsuario(evento.target.value)}
+            required
+          >
+            <option value="paciente">Paciente</option>
+            <option value="psicologo">Psicólogo</option>
+            <option value="adminClinica">Administrador da Clínica</option>
+          </select>
 
           <input 
             type="password" 

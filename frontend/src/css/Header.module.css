@@ -1,0 +1,62 @@
+.cabecalho {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 5%;
+    background-color: white;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.logo img {
+  display: block;
+  max-width: 130px;
+  transition: transform 0.2s ease-in-out;
+}
+
+.logo img:hover {
+  transform: scale(1.05);
+}
+
+.menu {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+.link {
+    text-decoration: none;
+    color: #475569;
+    font-weight: 500;
+    transition: color 0.3s;
+}
+
+.link:hover {
+    color: #2563eb;
+}
+.botaoDestaque {
+    background-color: #2563eb;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+.botaoDestaque:hover {
+  background-color: #475569;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+@media (max-width: 768px) {
+  .cabecalho {
+    padding: 15px 20px;
+  }
+  
+  .menu {
+    gap: 15px;
+  }
+  
+  .link {
+    font-size: 14px;
+  }
+}
