@@ -9,14 +9,17 @@ async function CriarAgendamento(dados) {
 async function ListarAgendamentos(filtro) {
     let query = supabase.from('agendamentos').select(`
         *,
-        pacientes!inner ( id, profiles!inner (nome_completo) ),
-        psicologos!inner ( id, profiles!inner (nome_completo) )
+        pacientes ( id, profiles (nome) ),
+        psicologos ( id, profiles (nome) ),
+        salas ( nome )
     `);
 
-    if (filtro.tipo === 'psicologo' && filtro.id) {
-        query = query.eq('psicologo_id', filtro.id);
-    } else if (filtro.tipo === 'paciente' && filtro.id) {
-        query = query.eq('paciente_id', filtro.id);
+    if (filtro.tipo === 'psicologo') {
+        const { data: psi } = await supabase.from('psicologos').select('id').eq('profile_id', filtro.id).single();
+        if (psi) query = query.eq('psicologo_id', psi.id);
+    } else if (filtro.tipo === 'paciente') {
+        const { data: pac } = await supabase.from('pacientes').select('id').eq('profile_id', filtro.id).single();
+        if (pac) query = query.eq('paciente_id', pac.id);
     }
 
     const { data, error } = await query;

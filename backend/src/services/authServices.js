@@ -1,4 +1,3 @@
-// backend/src/services/authService.js
 const supabase = require('../../db.js'); 
 
 async function Cadastrar(userName, email, telefone, senha, tipoUsuario) {
@@ -11,22 +10,19 @@ async function Cadastrar(userName, email, telefone, senha, tipoUsuario) {
 
     const userId = authData.user.id;
 
-    
     const { error: profileError } = await supabase
         .from('profiles')
         .insert([{
             id: userId,
-            nome_completo: userName,
+            nome: userName, 
             email: email,
             tipo_perfil: tipoUsuario
         }]);
 
     if (profileError) throw new Error('Erro ao criar perfil público.');
 
-  
     const { data: clinica } = await supabase.from('clinica').select('id').limit(1).single();
 
-   
     if (tipoUsuario === 'paciente') {
         await supabase.from('pacientes').insert([
             { profile_id: userId, telefone: telefone, clinica_id: clinica?.id }
@@ -54,7 +50,7 @@ async function Login(email, senha) {
     
     const { data: perfilData, error: perfilError } = await supabase
         .from('profiles')
-        .select('nome_completo, tipo_perfil')
+        .select('nome, tipo_perfil')
         .eq('id', userId)
         .single();
 
@@ -62,7 +58,7 @@ async function Login(email, senha) {
 
     return {
         userId: userId,
-        nome: perfilData.nome_completo,
+        nome: perfilData.nome,
         tipoUsuario: perfilData.tipo_perfil
     };
 }
