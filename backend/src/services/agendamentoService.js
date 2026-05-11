@@ -8,7 +8,7 @@ async function CriarAgendamento(dados) {
 
 async function ListarAgendamentos(filtro) {
     try {
-        // 1. Iniciamos a query (Protegida contra erros de relacionamento)
+        
         let query = supabase.from('agendamentos').select(`
             *,
             pacientes ( id, profiles ( nome ) ),
@@ -16,9 +16,9 @@ async function ListarAgendamentos(filtro) {
             salas ( id, nome )
         `);
 
-        // 2. Filtros seguros (Removido o .single() que causava quebra)
+        
         if (filtro.tipo === 'psicologo') {
-            // Traz como array, se vier vazio, ele não quebra o servidor
+            
             const { data: psi, error: erroPsi } = await supabase
                 .from('psicologos')
                 .select('id')
@@ -29,7 +29,7 @@ async function ListarAgendamentos(filtro) {
             if (psi && psi.length > 0) {
                 query = query.eq('psicologo_id', psi[0].id);
             } else {
-                return []; // Retorna lista vazia se não achar o psicólogo
+                return []; 
             }
 
         } else if (filtro.tipo === 'paciente') {
@@ -43,11 +43,11 @@ async function ListarAgendamentos(filtro) {
             if (pac && pac.length > 0) {
                 query = query.eq('paciente_id', pac[0].id);
             } else {
-                return []; // Retorna lista vazia se não achar o paciente
+                return []; 
             }
         }
 
-        // 3. Executa a busca final
+        
         const { data, error } = await query;
         
         if (error) {

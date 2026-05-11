@@ -3,6 +3,10 @@ const router = express.Router();
 const authController = require('../controller/authController.js');
 const pacienteController = require('../controller/pacienteController.js');
 const agendamentoController = require('../controller/agendamentoController.js');
+const prontuarioController = require('../controller/prontuarioController.js');
+
+
+router.post("/evolucoes", prontuarioController.registrarEvolucao);
 
 router.post("/auth/cadastro", authController.Cadastrar);
 

@@ -57,7 +57,7 @@ function Agenda() {
             if (Array.isArray(dados)) {
                 const formatados = dados.map(a => ({
                     id: a.id,
-                    // Caminho: paciente -> profile -> nome
+                    
                     title: `Sessão: ${a.pacientes?.profiles?.nome || 'Paciente'}`,
                     start: a.data_inicio,
                     end: a.data_fim,

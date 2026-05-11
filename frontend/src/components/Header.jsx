@@ -24,10 +24,10 @@ function Header() {
             <nav className={estilos.menu}>
                 {usuarioLogado ? (
                     <>
-                        {/* LINKS COMUNS A TODOS LOGADOS */}
+                        
                         <Link to="/agendamento" className={estilos.link}>📅 Agenda</Link>
 
-                        {/* MENU ESPECÍFICO PARA ADMIN */}
+                        
                         {usuarioLogado.tipoUsuario === 'adminClinica' && (
                             <>
                                 <Link to="/painel-admin" className={estilos.link}>🏢 Painel Admin</Link>
@@ -35,12 +35,12 @@ function Header() {
                             </>
                         )}
 
-                        {/* MENU ESPECÍFICO PARA PSICÓLOGO */}
+                        
                         {usuarioLogado.tipoUsuario === 'psicologo' && (
                             <Link to="/painel-psicologo" className={estilos.link}>🛋️ Minha Área</Link>
                         )}
 
-                        {/* MENU ESPECÍFICO PARA PACIENTE */}
+                        
                         {usuarioLogado.tipoUsuario === 'paciente' && (
                             <Link to="/area-paciente" className={estilos.link}>👤 Meus Dados</Link>
                         )}

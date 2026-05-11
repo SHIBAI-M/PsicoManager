@@ -2,10 +2,10 @@ const agendamentoService = require('../services/agendamentoService.js');
 
 async function ListarAgendamentos(req, res) {
     try {
-        // Pega os parâmetros da URL (id e tipo do usuário logado)
+        
         const { id, tipo } = req.query;
         
-        // Manda pro Service fazer o trabalho pesado com o Supabase
+        
         const agenda = await agendamentoService.ListarAgendamentos({ id, tipo });
         
         return res.status(200).json(agenda);
@@ -16,10 +16,10 @@ async function ListarAgendamentos(req, res) {
 
 async function CriarAgendamento(req, res) {
     try {
-        // Pega os dados do formulário preenchido no Frontend
+        
         const dados = req.body;
         
-        // Manda pro Service salvar no banco
+        
         const resultado = await agendamentoService.CriarAgendamento(dados);
         
         return res.status(201).json(resultado);

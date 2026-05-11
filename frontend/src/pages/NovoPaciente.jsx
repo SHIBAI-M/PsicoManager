@@ -86,7 +86,6 @@ function NovoPaciente() {
                     <input type="text" placeholder="Nome Completo" value={nome} onChange={(e) => setNome(e.target.value)} required />
                     <input type="email" placeholder="E-mail" value={email} onChange={(e) => setEmail(e.target.value)} required />
                     
-                    {/* Campos com as funções de máscara */}
                     <input type="text" placeholder="CPF" value={cpf} onChange={lidarComCpf} required />
                     
                     <label style={{ color: '#64748b', fontSize: '14px', marginBottom: '-15px' }}>Data de Nascimento:</label>
