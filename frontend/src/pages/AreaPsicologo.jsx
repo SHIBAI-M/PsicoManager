@@ -13,7 +13,7 @@ function AreaPsicologo() {
     const carregarAgenda = async () => {
         try {
             
-            const res = await fetch(`http://localhost:5632/agendamentos?id=${usuarioLogado.userId}&tipo=psicologo`);
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/agendamentos?id=${usuarioLogado.userId}&tipo=psicologo`);
             const dados = await res.json();
             if (Array.isArray(dados)) {
                 setAgenda(dados);
@@ -37,7 +37,7 @@ function AreaPsicologo() {
         };
 
         try {
-            const res = await fetch('http://localhost:5632/evolucoes', {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/evolucoes`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dadosEvolucao)

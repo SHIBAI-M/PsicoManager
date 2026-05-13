@@ -23,7 +23,7 @@ function Login() {
     const dados = { email, senha };
 
     try {
-      const resposta = await fetch('http://localhost:5632/auth/login', {
+      const resposta = await fetch(`${import.meta.env.VITE_API_URL}/auth/login`, {
         method: "POST",
         headers: {
           'Content-Type': 'application/json'

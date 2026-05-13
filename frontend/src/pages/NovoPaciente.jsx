@@ -53,7 +53,7 @@ function NovoPaciente() {
         };
 
         try {
-            const resposta = await fetch('http://localhost:5632/pacientes', {
+            const resposta = await fetch(`${import.meta.env.VITE_API_URL}/pacientes`, {
                 method: "POST",
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dados)

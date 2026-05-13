@@ -7,7 +7,7 @@ function AreaPaciente() {
     const [consultas, setConsultas] = useState([]);
 
     useEffect(() => {
-        fetch(`http://localhost:5632/agendamentos?id=${usuarioLogado.userId}&tipo=paciente`)
+        fetch(`${import.meta.env.VITE_API_URL}/agendamentos?id=${usuarioLogado.userId}&tipo=paciente`)
             .then(res => res.json())
             .then(setConsultas);
     }, [usuarioLogado]);

@@ -29,9 +29,9 @@ function Agenda() {
     const carregarDadosIniciais = async () => {
         try {
             const [resPac, resPsi, resSal] = await Promise.all([
-                fetch('http://localhost:5632/lista-pacientes'),
-                fetch('http://localhost:5632/lista-psicologos'),
-                fetch('http://localhost:5632/lista-salas')
+                fetch(`${import.meta.env.VITE_API_URL}/lista-pacientes`),
+                fetch(`${import.meta.env.VITE_API_URL}/lista-psicologos`),
+                fetch(`${import.meta.env.VITE_API_URL}/lista-salas`)
             ]);
             
             const pacs = await resPac.json();
@@ -48,7 +48,7 @@ function Agenda() {
 
     const carregarAgenda = async () => {
         try {
-            const url = `http://localhost:5632/agendamentos?id=${usuarioLogado.userId}&tipo=${usuarioLogado.tipoUsuario}`;
+            const url = `${import.meta.env.VITE_API_URL}/agendamentos?id=${usuarioLogado.userId}&tipo=${usuarioLogado.tipoUsuario}`;
             const res = await fetch(url);
             const dados = await res.json();
             
@@ -107,7 +107,7 @@ function Agenda() {
         };
 
         try {
-            const res = await fetch('http://localhost:5632/agendamentos', {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/agendamentos`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(dadosAgendamento)
